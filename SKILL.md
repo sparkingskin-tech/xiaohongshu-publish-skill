@@ -18,6 +18,7 @@ Use these exact helper scripts when they exist:
 - Install script: `/Users/skin/.openclaw/workspace/skills/xiaohongshu-publish/scripts/install_xhs_mcp.sh`
 - Start script: `/Users/skin/.openclaw/workspace/skills/xiaohongshu-publish/scripts/start_xhs_mcp.sh`
 - Safety scan: `/Users/skin/.openclaw/workspace/skills/xiaohongshu-publish/scripts/check_post_safety.sh`
+- QR fetch script: `/Users/skin/.openclaw/workspace/skills/xiaohongshu-publish/scripts/fetch_login_qr_png.sh`
 
 Preferred binary location:
 
@@ -71,7 +72,7 @@ Typical local flow:
 2. Check whether either the preferred binary location or the `/private/tmp` fallback binary exists.
 3. Check whether local port `18060` is already listening with `lsof -nP -iTCP:18060`.
 4. If the port is not listening and the start script exists, use the start script.
-5. If needed, get a login QR code with `get_login_qrcode`.
+5. If needed, get a login QR code with the QR fetch script above.
 6. Check login with `check_login_status`.
 7. Review draft safety with the safety scan script.
 8. On real publish only, call `publish_content`.
@@ -83,6 +84,34 @@ Treat these as valid evidence that the local service exists:
 - `curl -i http://127.0.0.1:18060/mcp` returns an HTTP response, even if it is not `200`
 
 Do not conclude the service is absent from a failed `mcporter` call alone.
+
+## Login QR Code
+
+Always use the QR fetch script, not ad-hoc decoding:
+
+```bash
+bash /Users/skin/.openclaw/workspace/skills/xiaohongshu-publish/scripts/fetch_login_qr_png.sh
+```
+
+The script writes:
+
+- PNG image: `/Users/skin/.openclaw/workspace/tmp/xhs_login_qr.png`
+- text note: `/Users/skin/.openclaw/workspace/tmp/xhs_login_qr.txt`
+
+After running it:
+
+1. Show the PNG file from the workspace path.
+2. Quote or paraphrase the expiry text from the text file.
+3. Ask the user to scan it with the XiaoHongShu app.
+
+Do not:
+
+- take base64 from a rendered plain-text transcript
+- send the base64 string to an online QR generator
+- tell the user to scan a URL that encodes the base64 text
+- use `/tmp` as the final image path when you need to display the QR in chat
+
+Only trust the `image.data` field from the actual `get_login_qrcode` payload.
 
 ## Safety Scan
 
@@ -106,6 +135,7 @@ If the scan passes, say no cleanup is required. If the scan fails, report exactl
 
 ```bash
 lsof -nP -iTCP:18060
+bash /Users/skin/.openclaw/workspace/skills/xiaohongshu-publish/scripts/fetch_login_qr_png.sh
 mcporter call --http-url http://127.0.0.1:18060/mcp --allow-http --tool check_login_status --output json
 mcporter call --http-url http://127.0.0.1:18060/mcp --allow-http --tool get_login_qrcode --output json
 mcporter call --http-url http://127.0.0.1:18060/mcp --allow-http --tool publish_content --args "$(cat /tmp/xhs_publish_args.json)" --output json
