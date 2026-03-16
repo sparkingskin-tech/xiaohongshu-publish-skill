@@ -100,8 +100,8 @@ The script writes:
 
 After running it:
 
-1. Show the PNG file from the workspace path.
-2. Quote or paraphrase the expiry text from the text file.
+1. Quote or paraphrase the expiry text from the text file.
+2. Send the PNG file to the user's chat with the `message` tool using `media`, `path`, or `filePath`.
 3. Ask the user to scan it with the XiaoHongShu app.
 
 Do not:
@@ -110,6 +110,7 @@ Do not:
 - send the base64 string to an online QR generator
 - tell the user to scan a URL that encodes the base64 text
 - use `/tmp` as the final image path when you need to display the QR in chat
+- prefer the `image` tool for user delivery when `message` can send the PNG directly
 
 Only trust the `image.data` field from the actual `get_login_qrcode` payload.
 
