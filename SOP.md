@@ -48,28 +48,25 @@ Delivery rule:
 - Do not send base64 text
 - Do not use online QR generators for this payload
 
-## 4) Draft Safety Gate (Mandatory)
+## 4) Confirmation Gate 1 (After Topic Selection)
 
-Run safety scan on draft and editable image sources:
+After topic research is completed and before copy production starts, get explicit user confirmation on:
 
-```bash
-bash scripts/check_post_safety.sh /path/to/draft.md /path/to/source.svg
-```
+- Selected topic direction
+- Target audience angle
+- Expected style and tone
 
-If scan fails:
+Only proceed to copy/image production after this confirmation.
 
-- Remove sensitive content first (paths, tokens, cookies, credentials, phone/email, internal markers)
-- Re-run scan until it passes
-
-## 5) Human Confirmation Gate (Mandatory)
+## 5) Confirmation Gate 2 (After Copy + Images)
 
 Before calling `publish_content`, confirm all:
 
-1. User explicitly says to publish now
-2. Final title/content is approved
-3. Final images are approved and exist
-4. Tags are approved
-5. Safety scan passed
+1. Final title/content is approved
+2. Final images are approved and exist
+3. Tags are approved
+4. Human manual check is complete (user checks sensitive information manually at this stage)
+5. User explicitly says to publish now
 
 ## 6) Publish
 
@@ -91,7 +88,7 @@ mcporter call --http-url http://127.0.0.1:18060/mcp --allow-http --tool publish_
 For dry run, do all checks except the final publish call.
 
 - Never call `publish_content`
-- Must return: completed checks, issues, cleanup needed, final pre-publish checklist
+- Must return: completed checks, issues, and final pre-publish checklist
 
 ## 8) Troubleshooting
 
